@@ -2,10 +2,16 @@ class TestCase:
     def __init__(self, test_method_name):
         self.test_method_name = test_method_name
 
-    def run(self):
+    def run(self, result):
+        result.test_started()
         self.set_up()
-        test_method = getattr(self, self.test_method_name)
-        test_method()
+        try:
+            test_method = getattr(self, self.test_method_name)
+            test_method()
+        except AssertionError:
+            result.add_failure(self.test_method_name)
+        except Exception:
+            result.add_error(self.test_method_name)
         self.tear_down()
 
     def set_up(self):
@@ -23,22 +29,25 @@ class MyTest(TestCase):
     def tear_down(self):
         print("tear_down")
 
-    def test_a(self):
-        print("test_a")
+    def test_success(self):
+        print("test_success")
 
-    def test_b(self):
-        print("test_b")
+    def test_failure(self):
+        print("test_failure")
+        assert False  # força falha
 
-    def test_c(self):
-        print("test_c")
+    def test_error(self):
+        print("test_error")
+        raise Exception("erro inesperado")
 
 
 if __name__ == "__main__":
-    test = MyTest("test_a")
-    test.run()
+    from test_result import TestResult
 
-    test = MyTest("test_b")
-    test.run()
+    result = TestResult()
 
-    test = MyTest("test_c")
-    test.run()
+    MyTest("test_success").run(result)
+    MyTest("test_failure").run(result)
+    MyTest("test_error").run(result)
+
+    print(result.summary())  # esperado: "3 run, 1 failed, 1 error"

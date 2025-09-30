@@ -20,34 +20,22 @@ class TestCase:
     def tear_down(self):
         pass
 
+    def assert_equal(self, first, second):
+        if first != second:
+            msg = f'{first} != {second}'
+            raise AssertionError(msg)
 
-# Exemplo de uso
-class MyTest(TestCase):
-    def set_up(self):
-        print("set_up")
+    def assert_true(self, expr):
+        if not expr:
+            msg = f'{expr} is not true'
+            raise AssertionError(msg)
 
-    def tear_down(self):
-        print("tear_down")
+    def assert_false(self, expr):
+        if expr:
+            msg = f'{expr} is not false'
+            raise AssertionError(msg)
 
-    def test_success(self):
-        print("test_success")
-
-    def test_failure(self):
-        print("test_failure")
-        assert False  # força falha
-
-    def test_error(self):
-        print("test_error")
-        raise Exception("erro inesperado")
-
-
-if __name__ == "__main__":
-    from test_result import TestResult
-
-    result = TestResult()
-
-    MyTest("test_success").run(result)
-    MyTest("test_failure").run(result)
-    MyTest("test_error").run(result)
-
-    print(result.summary())  # esperado: "3 run, 1 failed, 1 error"
+    def assert_in(self, member, container):
+        if member not in container:
+            msg = f'{member} not found in {container}'
+            raise AssertionError(msg)
